@@ -1,10 +1,37 @@
 import { NextResponse } from "next/server";
-import {
-  extractFoodIngredients,
-  getHfClient,
-  HF_MODELS,
-  type NerEntity,
-} from "@/lib/huggingface";
+import { GEMINI_MODEL, getGeminiModel } from "@/lib/gemini";
+
+function parseIngredients(raw: string): string[] {
+  const cleaned = raw
+    .trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "");
+
+  try {
+    const parsed = JSON.parse(cleaned) as unknown;
+    if (Array.isArray(parsed)) {
+      return [
+        ...new Set(
+          parsed
+            .filter((item): item is string => typeof item === "string")
+            .map((item) => item.trim().toLowerCase())
+            .filter(Boolean),
+        ),
+      ];
+    }
+  } catch {
+    // Fall through to comma / newline splitting.
+  }
+
+  return [
+    ...new Set(
+      cleaned
+        .split(/[\n,]/)
+        .map((item) => item.replace(/^[-*•\d.)\s]+/, "").trim().toLowerCase())
+        .filter(Boolean),
+    ),
+  ];
+}
 
 export async function POST(request: Request) {
   try {
@@ -15,24 +42,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Text is required." }, { status: 400 });
     }
 
-    const client = getHfClient();
-    const entities = (await client.tokenClassification({
-      provider: "hf-inference",
-      model: HF_MODELS.ingredients,
-      inputs: text,
-    })) as NerEntity[];
+    const model = getGeminiModel(
+      `Extract food ingredients from the user's text.
+Return ONLY a JSON array of strings, e.g. ["olive","avocado","chia seeds"].
+Use short lowercase ingredient names. No objects, no markdown, no explanation.
+If none found, return [].`,
+    );
 
-    const ingredients = extractFoodIngredients(entities);
+    const result = await model.generateContent(
+      `Extract ingredients from this text:\n\n${text}`,
+    );
+
+    const ingredients = parseIngredients(result.response.text());
 
     return NextResponse.json({
       ingredients,
-      entities,
-      model: HF_MODELS.ingredients,
+      model: GEMINI_MODEL,
     });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Ingredient detection failed.";
-    const status = /loading|503/i.test(message) ? 503 : 500;
-    return NextResponse.json({ error: message }, { status });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

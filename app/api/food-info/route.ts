@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGeminiModel } from "@/lib/gemini";
+import { GEMINI_MODEL, getGeminiModel } from "@/lib/gemini";
 
 export async function POST(request: Request) {
   try {
@@ -23,7 +23,7 @@ Keep it under 180 words.`,
       `Generate food information for: ${food}`,
     );
 
-    return NextResponse.json({ text: result.response.text() });
+    return NextResponse.json({ text: result.response.text(), model: GEMINI_MODEL });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Food info request failed.";

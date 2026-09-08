@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { MODELS } from "@/lib/models";
 
 export default function IngredientsPage() {
   const [text, setText] = useState(
@@ -32,7 +33,7 @@ export default function IngredientsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Request failed.");
       setIngredients(data.ingredients ?? []);
-      setModel(data.model ?? null);
+      setModel(data.model ?? MODELS.gemini);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed.");
     } finally {
@@ -47,7 +48,8 @@ export default function IngredientsPage() {
           Ingredients Identification
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Uses FoodBaseBERT-NER to find food entities in text.
+          Uses <code>{MODELS.gemini}</code> to extract food ingredients
+          mentioned in free-form text.
         </p>
       </div>
 

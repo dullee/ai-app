@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGeminiModel } from "@/lib/gemini";
+import { GEMINI_MODEL, getGeminiModel } from "@/lib/gemini";
 
 type ChatMessage = {
   role: "user" | "model";
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const result = await chat.sendMessage(message);
     const text = result.response.text();
 
-    return NextResponse.json({ text });
+    return NextResponse.json({ text, model: GEMINI_MODEL });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Chat request failed.";
     return NextResponse.json({ error: message }, { status: 500 });

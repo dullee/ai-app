@@ -4,10 +4,12 @@ import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { MODELS } from "@/lib/models";
 
 export default function FoodInfoPage() {
   const [food, setFood] = useState("");
   const [result, setResult] = useState<string | null>(null);
+  const [model, setModel] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,6 +20,7 @@ export default function FoodInfoPage() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setModel(null);
 
     try {
       const response = await fetch("/api/food-info", {
@@ -28,6 +31,7 @@ export default function FoodInfoPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Request failed.");
       setResult(data.text);
+      setModel(data.model ?? MODELS.gemini);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed.");
     } finally {
@@ -40,7 +44,8 @@ export default function FoodInfoPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Food Information</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gemini generates a short description, typical ingredients, and a tip.
+          <code>{MODELS.gemini}</code> generates a short description, typical
+          ingredients, and a tip.
         </p>
       </div>
 
@@ -63,9 +68,14 @@ export default function FoodInfoPage() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
           {result && (
-            <pre className="whitespace-pre-wrap rounded-lg border border-border bg-muted/30 p-4 text-sm">
-              {result}
-            </pre>
+            <div className="flex flex-col gap-2">
+              {model && (
+                <p className="font-mono text-xs text-muted-foreground">{model}</p>
+              )}
+              <pre className="whitespace-pre-wrap rounded-lg border border-border bg-muted/30 p-4 text-sm">
+                {result}
+              </pre>
+            </div>
           )}
         </CardContent>
       </Card>

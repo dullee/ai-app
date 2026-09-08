@@ -1,9 +1,8 @@
 import { InferenceClient } from "@huggingface/inference";
+import { MODELS } from "@/lib/models";
 
 export const HF_MODELS = {
-  ingredients: "Dizex/FoodBaseBERT-NER",
-  imageGeneration: "stabilityai/stable-diffusion-3-medium-diffusers",
-  imageCaptioning: "nlpconnect/vit-gpt2-image-captioning",
+  imageGeneration: MODELS.imageGeneration,
 } as const;
 
 export function getHfClient() {
@@ -14,36 +13,4 @@ export function getHfClient() {
     );
   }
   return new InferenceClient(token);
-}
-
-export type NerEntity = {
-  entity_group?: string;
-  entity?: string;
-  word: string;
-  score: number;
-  start?: number;
-  end?: number;
-};
-
-/** Merge subword / BIO NER tokens into unique ingredient labels. */
-export function extractFoodIngredients(entities: NerEntity[]): string[] {
-  const foods: string[] = [];
-  let current = "";
-
-  for (const entity of entities) {
-    const label = (entity.entity_group || entity.entity || "").toUpperCase();
-    if (!label.includes("FOOD")) continue;
-
-    const word = entity.word.replace(/^##/, "");
-    if (entity.word.startsWith("##") && current) {
-      current += word;
-    } else {
-      if (current) foods.push(current.trim());
-      current = word;
-    }
-  }
-
-  if (current) foods.push(current.trim());
-
-  return [...new Set(foods.map((f) => f.toLowerCase()).filter(Boolean))];
 }

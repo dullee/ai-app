@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getHfClient, HF_MODELS } from "@/lib/huggingface";
+import { GEMINI_MODEL, getGeminiModel } from "@/lib/gemini";
 
 export async function POST(request: Request) {
   try {
@@ -10,20 +10,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Image file is required." }, { status: 400 });
     }
 
-    const client = getHfClient();
-    const result = await client.imageToText({
-      provider: "hf-inference",
-      model: HF_MODELS.imageCaptioning,
-      inputs: file,
-    });
+    const bytes = Buffer.from(await file.arrayBuffer());
+    const mimeType = file.type || "image/jpeg";
 
-    const caption =
-      typeof result === "string"
-        ? result
-        : Array.isArray(result)
-          ? result[0]?.generated_text ?? ""
-          : (result as { generated_text?: string }).generated_text ?? "";
+    const model = getGeminiModel(
+      "You caption photos for a food demo app. Reply with one short, clear caption describing what you see. No preamble.",
+    );
 
+    const result = await model.generateContent([
+      {
+        inlineData: {
+          data: bytes.toString("base64"),
+          mimeType,
+        },
+      },
+      "Describe this image in one short caption.",
+    ]);
+
+    const caption = result.response.text().trim();
     if (!caption) {
       return NextResponse.json(
         { error: "Model returned an empty caption." },
@@ -33,12 +37,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       caption,
-      model: HF_MODELS.imageCaptioning,
+      model: GEMINI_MODEL,
     });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Image analysis failed.";
-    const status = /loading|503/i.test(message) ? 503 : 500;
-    return NextResponse.json({ error: message }, { status });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

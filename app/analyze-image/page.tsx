@@ -1,9 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { MODELS } from "@/lib/models";
 
 export default function AnalyzeImagePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -21,7 +22,7 @@ export default function AnalyzeImagePage() {
     setPreview(selected ? URL.createObjectURL(selected) : null);
   }
 
-  async function onSubmit(event: FormEvent) {
+  async function onSubmit(event: SubmitEvent) {
     event.preventDefault();
     if (!file || loading) return;
 
@@ -40,7 +41,7 @@ export default function AnalyzeImagePage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Request failed.");
       setCaption(data.caption);
-      setModel(data.model ?? null);
+      setModel(data.model ?? MODELS.gemini);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed.");
     } finally {
@@ -55,7 +56,8 @@ export default function AnalyzeImagePage() {
           Image Capture & Analysis
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Uses ViT-GPT2 image captioning to describe what is in an uploaded photo.
+          Uses <code>{MODELS.gemini}</code> vision to caption what is in an
+          uploaded photo.
         </p>
       </div>
 

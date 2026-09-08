@@ -1,9 +1,12 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { MODELS } from "@/lib/models";
+
 
 export default function GenerateImagePage() {
   const [prompt, setPrompt] = useState("a plate of fresh sushi on a wooden table");
@@ -11,8 +14,9 @@ export default function GenerateImagePage() {
   const [model, setModel] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+const [selectedModel, setSelectedModel] = useState<string>(MODELS.imageGeneration);
 
-  async function onSubmit(event: FormEvent) {
+  async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!prompt.trim() || loading) return;
 
@@ -24,12 +28,12 @@ export default function GenerateImagePage() {
       const response = await fetch("/api/generate-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, model: selectedModel }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Request failed.");
       setImage(data.image);
-      setModel(data.model ?? null);
+      setModel(data.model ?? selectedModel);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed.");
     } finally {
@@ -44,9 +48,8 @@ export default function GenerateImagePage() {
           Food Image Generation
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Uses Stable Diffusion 3 via{" "}
-          <code>@huggingface/inference</code>{" "}
-          <code>InferenceClient.textToImage</code>.
+          Free tier: <code>{MODELS.imageGeneration}</code>. Gemini image (
+          <code>{MODELS.geminiImage}</code>) needs a paid Gemini API plan.
         </p>
       </div>
 
@@ -55,13 +58,32 @@ export default function GenerateImagePage() {
           <CardTitle>Describe the image</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
+          <form onSubmit={onSubmit} className="flex flex-col gap-3">
+            <Select
+              value={selectedModel}
+              onValueChange={(value) => {
+                if (value != null) setSelectedModel(value);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a model" />
+              </SelectTrigger>
+              <SelectContent className="w-fit">
+                <SelectItem value={MODELS.geminiImage}>
+                  {MODELS.geminiImage}
+                </SelectItem>
+                <SelectItem value={MODELS.imageGeneration}>
+                  {MODELS.imageGeneration}
+                </SelectItem>
+              </SelectContent>
+            </Select>
             <Input
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder='e.g. "a bear eating honey pancakes"'
               disabled={loading}
             />
+         
             <Button type="submit" disabled={loading || !prompt.trim()}>
               {loading ? "Generating..." : "Generate"}
             </Button>

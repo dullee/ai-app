@@ -1,9 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { MODELS } from "@/lib/models";
 
 type Message = {
   role: "user" | "model";
@@ -15,8 +16,9 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [model, setModel] = useState<string | null>(null);
 
-  async function onSubmit(event: FormEvent) {
+  async function onSubmit(event: SubmitEvent) {
     event.preventDefault();
     const message = input.trim();
     if (!message || loading) return;
@@ -35,6 +37,7 @@ export default function ChatPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Request failed.");
       setMessages((prev) => [...prev, { role: "model", content: data.text }]);
+      setModel(data.model ?? MODELS.gemini);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Chat failed.");
     } finally {
@@ -47,7 +50,8 @@ export default function ChatPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Intelligent Chat</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Powered by Gemini via <code>@google/generative-ai</code>.
+          Powered by <code>{MODELS.gemini}</code> via{" "}
+          <code>@google/generative-ai</code>.
         </p>
       </div>
 
@@ -89,6 +93,9 @@ export default function ChatPage() {
           </form>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
+          {model && (
+            <p className="font-mono text-xs text-muted-foreground">{model}</p>
+          )}
         </CardContent>
       </Card>
     </div>
