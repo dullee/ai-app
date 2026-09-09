@@ -1,13 +1,13 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { MODELS } from "@/lib/models";
 
-export default function IngredientsPage() {
+export function IngredientsPanel() {
   const [text, setText] = useState(
     "Today's meal: Fresh olive poke bowl topped with chia seeds and avocado.",
   );
@@ -16,7 +16,7 @@ export default function IngredientsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(event: FormEvent) {
+  async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!text.trim() || loading) return;
 

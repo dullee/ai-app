@@ -1,12 +1,12 @@
 "use client";
 
-import { SubmitEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MODELS } from "@/lib/models";
 
-export default function AnalyzeImagePage() {
+export function AnalyzeImagePanel() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export default function AnalyzeImagePage() {
     setPreview(selected ? URL.createObjectURL(selected) : null);
   }
 
-  async function onSubmit(event: SubmitEvent) {
+  async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!file || loading) return;
 

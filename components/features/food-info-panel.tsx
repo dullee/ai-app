@@ -1,19 +1,19 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MODELS } from "@/lib/models";
 
-export default function FoodInfoPage() {
+export function FoodInfoPanel() {
   const [food, setFood] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [model, setModel] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(event: FormEvent) {
+  async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!food.trim() || loading) return;
 

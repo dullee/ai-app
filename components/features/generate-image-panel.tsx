@@ -1,20 +1,29 @@
 "use client";
 
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { SubmitEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { MODELS } from "@/lib/models";
 
-
-export default function GenerateImagePage() {
-  const [prompt, setPrompt] = useState("a plate of fresh sushi on a wooden table");
+export function GenerateImagePanel() {
+  const [prompt, setPrompt] = useState(
+    "a plate of fresh sushi on a wooden table",
+  );
   const [image, setImage] = useState<string | null>(null);
   const [model, setModel] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-const [selectedModel, setSelectedModel] = useState<string>(MODELS.imageGeneration);
+  const [selectedModel, setSelectedModel] = useState<string>(
+    MODELS.imageGeneration,
+  );
 
   async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,7 +92,6 @@ const [selectedModel, setSelectedModel] = useState<string>(MODELS.imageGeneratio
               placeholder='e.g. "a bear eating honey pancakes"'
               disabled={loading}
             />
-         
             <Button type="submit" disabled={loading || !prompt.trim()}>
               {loading ? "Generating..." : "Generate"}
             </Button>

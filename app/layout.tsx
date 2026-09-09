@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ChatWidget } from "@/components/chat-widget";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8">
             {children}
           </main>
+          <ChatWidget />
         </ThemeProvider>
       </body>
     </html>
