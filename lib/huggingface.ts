@@ -1,10 +1,6 @@
 import { InferenceClient } from "@huggingface/inference";
-import { MODELS } from "@/lib/models";
-
-export const HF_MODELS = {
-  imageGeneration: MODELS.imageGeneration,
-} as const;
-
+ 
+/** Optional Hugging Face client for future provider experiments. */
 export function getHfClient() {
   const token = process.env.HF_TOKEN;
   if (!token) {

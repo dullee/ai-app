@@ -57,8 +57,9 @@ export function GenerateImagePanel() {
           Food Image Generation
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Free tier: <code>{MODELS.imageGeneration}</code>. Gemini image (
-          <code>{MODELS.geminiImage}</code>) needs a paid Gemini API plan.
+          Free: <code>{MODELS.imageGeneration}</code> via Pollinations (no
+          cost). Gemini image (<code>{MODELS.geminiImage}</code>) needs a paid
+          Gemini API plan.
         </p>
       </div>
 

@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { AnalyzeImagePanel } from "@/components/features/analyze-image-panel";
-import { FoodInfoPanel } from "@/components/features/food-info-panel";
 import { GenerateImagePanel } from "@/components/features/generate-image-panel";
 import { IngredientsPanel } from "@/components/features/ingredients-panel";
 import { Button } from "@/components/ui/button";
 
 const tabs = [
-  { id: "food-info", label: "Food Info", panel: FoodInfoPanel },
   { id: "ingredients", label: "Ingredients", panel: IngredientsPanel },
   { id: "generate-image", label: "Generate Image", panel: GenerateImagePanel },
   { id: "analyze-image", label: "Analyze Image", panel: AnalyzeImagePanel },
@@ -17,8 +15,9 @@ const tabs = [
 type TabId = (typeof tabs)[number]["id"];
 
 export function AppShell() {
-  const [activeTab, setActiveTab] = useState<TabId>("food-info");
-  const ActivePanel = tabs.find((tab) => tab.id === activeTab)?.panel ?? FoodInfoPanel;
+  const [activeTab, setActiveTab] = useState<TabId>("ingredients");
+  const ActivePanel =
+    tabs.find((tab) => tab.id === activeTab)?.panel ?? IngredientsPanel;
 
   return (
     <div className="flex flex-col gap-6">

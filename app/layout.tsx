@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AI Demo",
   description:
-    "Demo app integrating Gemini and Hugging Face models for chat, food info, ingredients, image captions, and image generation.",
+    "Demo app integrating Gemini and Hugging Face models for chat, ingredients, image captions, and image generation.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

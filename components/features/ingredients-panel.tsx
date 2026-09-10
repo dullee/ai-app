@@ -53,11 +53,10 @@ export function IngredientsPanel() {
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Paste meal or recipe text</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+      <div>
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight">Paste meal or recipe text</h2>
+        </div>
           <form onSubmit={onSubmit} className="flex flex-col gap-3">
             <Textarea
               value={text}
@@ -71,7 +70,9 @@ export function IngredientsPanel() {
           </form>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
-
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">Identified Ingredients</h2>
+          </div>
           {ingredients.length > 0 && (
             <div className="flex flex-col gap-2">
               {model && (
@@ -92,8 +93,8 @@ export function IngredientsPanel() {
               No food entities detected. Try a more descriptive sentence.
             </p>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </div>
+
   );
 }
