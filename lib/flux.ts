@@ -1,6 +1,6 @@
 import { MODELS } from "@/lib/models";
 
-export const FLUX_MODEL = MODELS.imageGeneration;
+export const FLUX_MODEL = MODELS.flux;
 
 /**
  * Free text-to-image using Pollinations' Flux endpoint (FLUX.1-schnell family).

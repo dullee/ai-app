@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { generateImageWithFlux, FLUX_MODEL } from "@/lib/flux";
 import { generateImageWithGemini, GEMINI_IMAGE_MODEL } from "@/lib/gemini";
+import {
+  generateImageWithStableDiffusion,
+  HF_MODELS,
+} from "@/lib/huggingface";
 import { MODELS } from "@/lib/models";
 
 export async function POST(request: Request) {
@@ -12,12 +16,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Prompt is required." }, { status: 400 });
     }
 
-    const useGemini =
-      body.model === MODELS.geminiImage || body.model === MODELS.gemini;
-
-    if (useGemini) {
+    if (body.model === MODELS.geminiImage || body.model === MODELS.gemini) {
       const image = await generateImageWithGemini(prompt);
       return NextResponse.json({ image, model: GEMINI_IMAGE_MODEL });
+    }
+
+    if (body.model === MODELS.stableDiffusion) {
+      const image = await generateImageWithStableDiffusion(prompt);
+      return NextResponse.json({
+        image,
+        model: HF_MODELS.stableDiffusion,
+      });
     }
 
     const image = await generateImageWithFlux(prompt);

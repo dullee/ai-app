@@ -9,7 +9,9 @@ Single-page Next.js demo that combines Gemini, free FLUX image generation, and a
 | Floating chat (bottom-right) | `gemini-3.6-flash` | Free-tier Gemini text chat |
 | Ingredients extraction | `gemini-3.6-flash` | Pulls food ingredients from free-form text |
 | Image captioning | `gemini-3.6-flash` | Vision caption for an uploaded photo |
-| Image generation | `black-forest-labs/FLUX.1-schnell` via [Pollinations](https://pollinations.ai) |
+| Image generation | `black-forest-labs/FLUX.1-schnell` via [Pollinations](https://pollinations.ai) | Free, no API key |
+| Image generation | `stabilityai/stable-diffusion-3-medium-diffusers` via Hugging Face | Needs `HF_TOKEN` |
+| Optional Gemini image | `gemini-2.5-flash-image` | Paid Gemini plan required |
 
 UI highlights:
 

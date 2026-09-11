@@ -20,9 +20,7 @@ export function GenerateImagePanel() {
   const [model, setModel] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedModel, setSelectedModel] = useState<string>(
-    MODELS.imageGeneration,
-  );
+  const [selectedModel, setSelectedModel] = useState<string>(MODELS.flux);
 
   async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,40 +54,62 @@ export function GenerateImagePanel() {
           Food Image Generation
         </h1>
         <p className="text-sm text-muted-foreground">
-          Free <code>{MODELS.imageGeneration}</code> via Pollinations. Gemini
-          image needs a paid plan.
+          Free FLUX via Pollinations, Stable Diffusion via Hugging Face, or
+          Gemini image (paid).
         </p>
       </header>
 
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-5">
         <h2 className="text-sm font-medium text-muted-foreground">
           Describe the image
         </h2>
-        <form onSubmit={onSubmit} className="flex flex-col gap-3">
-          <Select
-            value={selectedModel}
-            onValueChange={(value) => {
-              if (value != null) setSelectedModel(value);
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a model" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={MODELS.imageGeneration}>
-                {MODELS.imageGeneration}
-              </SelectItem>
-              <SelectItem value={MODELS.geminiImage}>
-                {MODELS.geminiImage}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder='e.g. "a bear eating honey pancakes"'
-            disabled={loading}
-          />
+
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="image-prompt"
+              className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+            >
+              Prompt
+            </label>
+            <Input
+              id="image-prompt"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder='e.g. "a bear eating honey pancakes"'
+              disabled={loading}
+              className="h-10 bg-background"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="image-model"
+              className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+            >
+              Model
+            </label>
+            <Select
+              value={selectedModel}
+              onValueChange={(value) => {
+                if (value != null) setSelectedModel(value);
+              }}
+            >
+              <SelectTrigger id="image-model" className="w-fit max-w-full">
+                <SelectValue placeholder="Select a model" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={MODELS.flux}>{MODELS.flux}</SelectItem>
+                <SelectItem value={MODELS.stableDiffusion}>
+                  {MODELS.stableDiffusion}
+                </SelectItem>
+                <SelectItem value={MODELS.geminiImage}>
+                  {MODELS.geminiImage}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
             type="submit"
             className="self-start"
