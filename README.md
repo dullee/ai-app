@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Demo App
 
-## Getting Started
+Single-page Next.js demo that combines Gemini, free FLUX image generation, and a floating chat widget.
 
-First, run the development server:
+## Features
+
+| Feature | Model / backend | Notes |
+| --- | --- | --- |
+| Floating chat (bottom-right) | `gemini-3.6-flash` | Free-tier Gemini text chat |
+| Ingredients extraction | `gemini-3.6-flash` | Pulls food ingredients from free-form text |
+| Image captioning | `gemini-3.6-flash` | Vision caption for an uploaded photo |
+| Image generation | `black-forest-labs/FLUX.1-schnell` via [Pollinations](https://pollinations.ai) |
+
+UI highlights:
+
+- Tabbed main view (Ingredients / Generate Image / Analyze Image)
+- Dark mode toggle (system preference + manual)
+- API keys stay on the server in `app/api/*` routes
+
+## Stack
+
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS 4 + shadcn/ui
+- `@google/generative-ai` for Gemini
+- Pollinations HTTP API for free FLUX images
+
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create `.env.local` in the project root:
+
+```bash
+# Required for chat, ingredients, and image captioning
+GEMINI_API_KEY=your_gemini_api_key
+
+# Optional — only needed if you use Hugging Face helpers later
+HF_TOKEN=your_hf_token
+```
+
+Get a Gemini key from [Google AI Studio](https://aistudio.google.com/apikey).
+
+3. Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev    # development server
+npm run build  # production build
+npm run start  # run production build
+npm run lint   # ESLint
+```
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  page.tsx                 # single-page shell
+  api/
+    chat/                  # Gemini chat
+    ingredients/           # ingredient extraction
+    analyze-image/         # image captioning
+    generate-image/        # FLUX (free) or Gemini image (paid)
+components/
+  app-shell.tsx            # tab switcher
+  chat-widget.tsx          # floating chat
+  features/                # feature panels
+lib/
+  models.ts                # shared model ids
+  gemini.ts                # Gemini helpers
+  flux.ts                  # free Pollinations FLUX helper
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Pollinations anonymous image generation can be rate-limited (roughly one request every ~15 seconds).
+- Gemini image generation requires a paid Gemini plan; free-tier quota for image models is `0`.
+- Never commit `.env.local` — keep API keys out of git.

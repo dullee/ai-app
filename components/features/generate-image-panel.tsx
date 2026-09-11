@@ -2,7 +2,6 @@
 
 import { type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -51,72 +50,79 @@ export function GenerateImagePanel() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+      <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">
           Food Image Generation
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Free: <code>{MODELS.imageGeneration}</code> via Pollinations (no
-          cost). Gemini image (<code>{MODELS.geminiImage}</code>) needs a paid
-          Gemini API plan.
+        <p className="text-sm text-muted-foreground">
+          Free <code>{MODELS.imageGeneration}</code> via Pollinations. Gemini
+          image needs a paid plan.
         </p>
-      </div>
+      </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Describe the image</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <form onSubmit={onSubmit} className="flex flex-col gap-3">
-            <Select
-              value={selectedModel}
-              onValueChange={(value) => {
-                if (value != null) setSelectedModel(value);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a model" />
-              </SelectTrigger>
-              <SelectContent className="w-fit">
-                <SelectItem value={MODELS.geminiImage}>
-                  {MODELS.geminiImage}
-                </SelectItem>
-                <SelectItem value={MODELS.imageGeneration}>
-                  {MODELS.imageGeneration}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder='e.g. "a bear eating honey pancakes"'
-              disabled={loading}
-            />
-            <Button type="submit" disabled={loading || !prompt.trim()}>
-              {loading ? "Generating..." : "Generate"}
-            </Button>
-          </form>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Describe the image
+        </h2>
+        <form onSubmit={onSubmit} className="flex flex-col gap-3">
+          <Select
+            value={selectedModel}
+            onValueChange={(value) => {
+              if (value != null) setSelectedModel(value);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a model" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={MODELS.imageGeneration}>
+                {MODELS.imageGeneration}
+              </SelectItem>
+              <SelectItem value={MODELS.geminiImage}>
+                {MODELS.geminiImage}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder='e.g. "a bear eating honey pancakes"'
+            disabled={loading}
+          />
+          <Button
+            type="submit"
+            className="self-start"
+            disabled={loading || !prompt.trim()}
+          >
+            {loading ? "Generating..." : "Generate"}
+          </Button>
+        </form>
 
-          {loading && (
-            <p className="text-sm text-muted-foreground">
-              Generating image — this can take a while on first run.
-            </p>
-          )}
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          {model && image && (
-            <p className="font-mono text-xs text-muted-foreground">{model}</p>
-          )}
-          {image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={image}
-              alt={prompt}
-              className="max-h-[512px] w-full rounded-lg border border-border object-contain"
-            />
-          )}
-        </CardContent>
-      </Card>
+        {loading && (
+          <p className="text-sm text-muted-foreground">
+            Generating image — this can take a while on first run.
+          </p>
+        )}
+        {error && <p className="text-sm text-destructive">{error}</p>}
+      </section>
+
+      {image && (
+        <section className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-sm font-medium text-muted-foreground">Result</h2>
+            {model && (
+              <p className="font-mono text-xs text-muted-foreground">{model}</p>
+            )}
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image}
+            alt={prompt}
+            className="max-h-[512px] w-full rounded-xl object-contain"
+          />
+        </section>
+      )}
     </div>
   );
 }

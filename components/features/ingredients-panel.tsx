@@ -3,7 +3,6 @@
 import { type SubmitEvent, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { MODELS } from "@/lib/models";
 
@@ -42,59 +41,65 @@ export function IngredientsPanel() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+      <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">
           Ingredients Identification
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Uses <code>{MODELS.gemini}</code> to extract food ingredients
-          mentioned in free-form text.
+        <p className="text-sm text-muted-foreground">
+          Extract food ingredients from free-form text with{" "}
+          <code>{MODELS.gemini}</code>.
         </p>
-      </div>
+      </header>
 
-      <div>
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight">Paste meal or recipe text</h2>
-        </div>
-          <form onSubmit={onSubmit} className="flex flex-col gap-3">
-            <Textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              rows={5}
-              disabled={loading}
-            />
-            <Button type="submit" disabled={loading || !text.trim()}>
-              {loading ? "Detecting..." : "Detect ingredients"}
-            </Button>
-          </form>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Meal or recipe text
+        </h2>
+        <form onSubmit={onSubmit} className="flex flex-col gap-3">
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={5}
+            disabled={loading}
+          />
+          <Button
+            type="submit"
+            className="self-start"
+            disabled={loading || !text.trim()}
+          >
+            {loading ? "Detecting..." : "Detect ingredients"}
+          </Button>
+        </form>
+        {error && <p className="text-sm text-destructive">{error}</p>}
+      </section>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight">Identified Ingredients</h2>
+      {(ingredients.length > 0 || (model && !loading && !error)) && (
+        <section className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-sm font-medium text-muted-foreground">
+              Identified ingredients
+            </h2>
+            {model && (
+              <p className="font-mono text-xs text-muted-foreground">{model}</p>
+            )}
           </div>
-          {ingredients.length > 0 && (
-            <div className="flex flex-col gap-2">
-              {model && (
-                <p className="font-mono text-xs text-muted-foreground">{model}</p>
-              )}
-              <div className="flex flex-wrap gap-2">
-                {ingredients.map((ingredient) => (
-                  <Badge key={ingredient} variant="secondary">
-                    {ingredient}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {!loading && ingredients.length === 0 && model && !error && (
+          {ingredients.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {ingredients.map((ingredient) => (
+                <Badge key={ingredient} variant="secondary">
+                  {ingredient}
+                </Badge>
+              ))}
+            </div>
+          ) : (
             <p className="text-sm text-muted-foreground">
               No food entities detected. Try a more descriptive sentence.
             </p>
           )}
-        </div>
-      </div>
-
+        </section>
+      )}
+    </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MODELS } from "@/lib/models";
 
@@ -50,56 +49,63 @@ export function AnalyzeImagePanel() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+      <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">
           Image Capture & Analysis
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Uses <code>{MODELS.gemini}</code> vision to caption what is in an
-          uploaded photo.
+        <p className="text-sm text-muted-foreground">
+          Caption an uploaded photo with <code>{MODELS.gemini}</code> vision.
         </p>
-      </div>
+      </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Upload an image</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <form onSubmit={onSubmit} className="flex flex-col gap-3">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
-              disabled={loading}
-            />
-            <Button type="submit" disabled={loading || !file}>
-              {loading ? "Analyzing..." : "Analyze image"}
-            </Button>
-          </form>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Upload an image
+        </h2>
+        <form onSubmit={onSubmit} className="flex flex-col gap-3">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
+            disabled={loading}
+          />
+          <Button
+            type="submit"
+            className="self-start"
+            disabled={loading || !file}
+          >
+            {loading ? "Analyzing..." : "Analyze image"}
+          </Button>
+        </form>
+        {error && <p className="text-sm text-destructive">{error}</p>}
+      </section>
 
-          {preview && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={preview}
-              alt="Upload preview"
-              className="max-h-72 w-full rounded-lg border border-border object-contain"
-            />
-          )}
+      {preview && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">Preview</h2>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={preview}
+            alt="Upload preview"
+            className="max-h-72 w-full rounded-xl object-contain"
+          />
+        </section>
+      )}
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          {caption && (
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
-              {model && (
-                <p className="mb-2 font-mono text-xs text-muted-foreground">
-                  {model}
-                </p>
-              )}
-              <p className="text-sm">{caption}</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {caption && (
+        <section className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-sm font-medium text-muted-foreground">
+              Caption
+            </h2>
+            {model && (
+              <p className="font-mono text-xs text-muted-foreground">{model}</p>
+            )}
+          </div>
+          <p className="text-sm leading-relaxed">{caption}</p>
+        </section>
+      )}
     </div>
   );
 }
